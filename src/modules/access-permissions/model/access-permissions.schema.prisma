@@ -5,6 +5,8 @@ model Role {
 
   users            User[]
   rolePermissions  RolePermission[]
+
+  @@map("role")
 }
 
 model Permission {
@@ -13,6 +15,8 @@ model Permission {
   description      String  @db.VarChar(256)
 
   rolePermissions  RolePermission[]
+
+  @@map("permission")
 }
 
 model RolePermission {
