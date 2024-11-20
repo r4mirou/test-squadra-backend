@@ -3,6 +3,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import * as compression from 'compression';
 import helmet from 'helmet';
+import { PrismaService } from './config/database/prisma.service';
 import { Swagger } from './config/swagger/swagger';
 
 async function bootstrap() {
@@ -15,6 +16,9 @@ async function bootstrap() {
   app.use(compression());
 
   Swagger.initalizer(app);
+
+  const prismaService = app.get(PrismaService);
+  await prismaService.enableShutdownHooks(app);
 
   await app.listen(port, () =>
     console.log(`Application is running on PORT: ${port}`),
