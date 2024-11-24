@@ -7,6 +7,14 @@ export class Swagger {
       .setTitle("Article System Doc's")
       .setDescription('')
       .setVersion('0.0.1')
+      .addBearerAuth(
+        {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+        'access-token',
+      )
       .build();
 
     return config;
