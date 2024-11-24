@@ -16,6 +16,8 @@ import { ApiBearerAuth, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { ValidateFieldsPipe } from 'src/commons/pipes/validate-fields.pipe';
 import { logMask, logText } from 'src/commons/utils/generic-functions.utils';
 
+import { AuthGuard } from 'src/commons/guards/auth/auth.guard';
+
 import { UserService } from './user.service';
 
 import { CreateUserDto } from './dto/create-user.dto';
@@ -26,6 +28,7 @@ import { ResponseUserDto } from './dto/response-user.dto';
 @Controller('users')
 @ApiBearerAuth()
 @UsePipes(ValidateFieldsPipe)
+@UseGuards(AuthGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
   private readonly logger = new Logger(UserController.name);
