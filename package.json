@@ -19,7 +19,9 @@
     "prisma:aux:concat-schema": "find ./src -name '*.prisma' -exec sh -c 'cat {} && echo && echo' \\; > prisma/schema.prisma",
     "prisma:aux:concat-command": "yarn prisma:aux:create-dir && yarn prisma:aux:concat-schema",
     "prisma:generate": "yarn prisma:aux:concat-command && npx prisma generate",
-    "prisma:dev:migration": "prisma migrate dev"
+    "prisma:seed": "ts-node --transpile-only prisma/seeds/_main.seed.ts",
+    "prisma:dev:migration": "prisma migrate dev",
+    "prisma:prod:migration": "prisma migrate deploy"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
