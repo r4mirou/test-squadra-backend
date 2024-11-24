@@ -16,6 +16,9 @@ import { ValidateFieldsPipe } from 'src/commons/pipes/validate-fields.pipe';
 import { logText } from 'src/commons/utils/generic-functions.utils';
 
 import { AuthGuard } from 'src/commons/guards/auth/auth.guard';
+import { PermissionEnum } from 'src/commons/enums/permission.enum';
+import { Permissions } from 'src/commons/decorators/permission.decorator';
+import { PermissionGuard } from 'src/commons/guards/permission/permission.guard';
 
 import { ArticleService } from './article.service';
 
@@ -27,12 +30,13 @@ import { ResponseArticleDto } from './dto/response-article.dto';
 @Controller('articles')
 @ApiBearerAuth()
 @UsePipes(ValidateFieldsPipe)
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard, PermissionGuard)
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
   private readonly logger = new Logger(ArticleController.name);
 
   @Post()
+  @Permissions(PermissionEnum.CREATE_ARTICLE)
   @ApiCreatedResponse({ type: ResponseArticleDto })
   async create(@Body() data: CreateArticleDto) {
     this.logger.log('[create] starting article creation', logText(data));
@@ -45,6 +49,7 @@ export class ArticleController {
   }
 
   @Get('')
+  @Permissions(PermissionEnum.READ_ARTICLE)
   @ApiCreatedResponse({ type: ResponseArticleDto })
   async getAll() {
     this.logger.log('[getAll] starting articles research');
@@ -57,6 +62,7 @@ export class ArticleController {
   }
 
   @Get('/:articleId')
+  @Permissions(PermissionEnum.READ_ARTICLE)
   @ApiCreatedResponse({ type: ResponseArticleDto })
   async get(@Param('articleId', ParseIntPipe) articleId: number) {
     this.logger.log('[get] starting article research', logText({ articleId }));
@@ -69,6 +75,7 @@ export class ArticleController {
   }
 
   @Patch('/:articleId')
+  @Permissions(PermissionEnum.EDIT_ARTICLE)
   @ApiCreatedResponse({ type: ResponseArticleDto })
   async update(
     @Body() data: UpdateArticleDto,
@@ -84,6 +91,7 @@ export class ArticleController {
   }
 
   @Delete('/:articleId')
+  @Permissions(PermissionEnum.DELETE_ARTICLE)
   @ApiCreatedResponse({ type: ResponseArticleDto })
   async delete(@Param('articleId', ParseIntPipe) articleId: number) {
     this.logger.log('[delete] starting delete article', logText({ articleId }));

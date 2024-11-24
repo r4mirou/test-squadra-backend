@@ -17,6 +17,9 @@ import { ValidateFieldsPipe } from 'src/commons/pipes/validate-fields.pipe';
 import { logMask, logText } from 'src/commons/utils/generic-functions.utils';
 
 import { AuthGuard } from 'src/commons/guards/auth/auth.guard';
+import { Permissions } from 'src/commons/decorators/permission.decorator';
+import { PermissionEnum } from 'src/commons/enums/permission.enum';
+import { PermissionGuard } from 'src/commons/guards/permission/permission.guard';
 
 import { UserService } from './user.service';
 
@@ -28,12 +31,13 @@ import { ResponseUserDto } from './dto/response-user.dto';
 @Controller('users')
 @ApiBearerAuth()
 @UsePipes(ValidateFieldsPipe)
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard, PermissionGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
   private readonly logger = new Logger(UserController.name);
 
   @Post()
+  @Permissions(PermissionEnum.CREATE_USER)
   @ApiCreatedResponse({ type: ResponseUserDto })
   async create(@Body() data: CreateUserDto) {
     this.logger.log('[create] starting user creation', logMask(data));
@@ -46,6 +50,7 @@ export class UserController {
   }
 
   @Get('')
+  @Permissions(PermissionEnum.READ_USER)
   @ApiCreatedResponse({ type: ResponseUserDto })
   async getAll() {
     this.logger.log('[getAll] starting users research');
@@ -58,6 +63,7 @@ export class UserController {
   }
 
   @Get('/:userId')
+  @Permissions(PermissionEnum.READ_USER)
   @ApiCreatedResponse({ type: ResponseUserDto })
   async get(@Param('userId', ParseIntPipe) userId: number) {
     this.logger.log('[get] starting user research', logText({ userId }));
@@ -70,6 +76,7 @@ export class UserController {
   }
 
   @Patch('/:userId')
+  @Permissions(PermissionEnum.EDIT_USER)
   @ApiCreatedResponse({ type: ResponseUserDto })
   async update(@Body() data: UpdateUserDto, @Param('userId', ParseIntPipe) userId: number) {
     this.logger.log('[update] starting update user', logText({ userId }), logText(data));
@@ -82,6 +89,7 @@ export class UserController {
   }
 
   @Delete('/:userId')
+  @Permissions(PermissionEnum.DELETE_USER)
   @ApiCreatedResponse({ type: ResponseUserDto })
   async delete(@Param('userId', ParseIntPipe) userId: number) {
     this.logger.log('[delete] starting delete user', logText({ userId }));
