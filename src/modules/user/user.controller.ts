@@ -29,7 +29,7 @@ import { ResponseUserDto } from './dto/response-user.dto';
 
 @ApiTags('Users')
 @Controller('users')
-@ApiBearerAuth()
+@ApiBearerAuth('access-token')
 @UsePipes(ValidateFieldsPipe)
 @UseGuards(AuthGuard, PermissionGuard)
 export class UserController {

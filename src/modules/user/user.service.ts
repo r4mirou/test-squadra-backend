@@ -21,7 +21,7 @@ export class UserService {
   constructor(private readonly repository: UserRepository) {}
 
   private readonly logger = new Logger(UserService.name);
-  private readonly saltRounds = process.env.PASS_SALT_ROUNDS;
+  private readonly saltRounds: number = parseInt(process.env.PASS_SALT_ROUNDS);
 
   async create(data: CreateUserDto): Promise<ResponseUserDto> {
     this.logger.log('[create] starting user creation', logMask(data));
@@ -107,6 +107,7 @@ export class UserService {
       //refatorar erros prisma
       if (error?.code === 'P2002') throw new ConflictException('Email já registrado');
       if (error?.code === 'P2003') throw new ConflictException('Role incorreta');
+      if (error?.code === 'P2025') throw new ConflictException('Usuário não encontrado');
 
       throw new InternalServerErrorException('Falha ao atualizar usuário');
     }
@@ -122,12 +123,11 @@ export class UserService {
       sanitizedUser = this.sanitizeUser(deletedUser);
     } catch (error) {
       this.logger.error('[delete] user delete failure', logText(error));
-      throw new InternalServerErrorException('Falha ao deletar usuário');
-    }
 
-    if (!sanitizedUser) {
-      this.logger.warn('[get] not found user');
-      throw new NotFoundException('Usuário não encontrado');
+      //refatorar erros prisma
+      if (error?.code === 'P2025') throw new ConflictException('Usuário não encontrado');
+
+      throw new InternalServerErrorException('Falha ao deletar usuário');
     }
 
     this.logger.log('[get] user deleted successfully', logText(sanitizedUser));
@@ -145,6 +145,8 @@ export class UserService {
   }
 
   private sanitizeUser(user: UserDto & { password: string }): UserDto {
+    if (!user) return null;
+
     const { password, ...sanitizedUser } = user;
     void password;
 

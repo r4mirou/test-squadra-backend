@@ -35,6 +35,8 @@ export class UserRepository extends BaseRepository<User, PrismaClient['user']> {
       },
     });
 
+    if (!row) return null;
+
     const { role, ...userWithoutRole } = row;
     return {
       ...userWithoutRole,
