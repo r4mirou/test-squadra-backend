@@ -28,7 +28,7 @@ import { ResponseArticleDto } from './dto/response-article.dto';
 
 @ApiTags('Articles')
 @Controller('articles')
-@ApiBearerAuth()
+@ApiBearerAuth('access-token')
 @UsePipes(ValidateFieldsPipe)
 @UseGuards(AuthGuard, PermissionGuard)
 export class ArticleController {

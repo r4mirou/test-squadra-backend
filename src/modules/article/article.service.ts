@@ -33,7 +33,7 @@ export class ArticleService {
       //refatorar erros prisma
       if (error?.code === 'P2003') throw new ConflictException('Usuário incorreto');
 
-      throw new InternalServerErrorException('Falha ao criar Artigo');
+      throw new InternalServerErrorException('Falha ao criar artigo');
     }
   }
 
@@ -51,7 +51,7 @@ export class ArticleService {
 
     if (!articles || articles.length === 0) {
       this.logger.warn('[getAll] articles not found');
-      throw new NotFoundException('Nenhum artigo cadastrado');
+      throw new NotFoundException('Nenhum artigo encontrado');
     }
 
     this.logger.log('[getAll] articles found ', logText(articles));
@@ -93,6 +93,7 @@ export class ArticleService {
 
       //refatorar erros prisma
       if (error?.code === 'P2003') throw new ConflictException('Usuário incorreto');
+      if (error?.code === 'P2025') throw new ConflictException('Artigo não encontrado');
 
       throw new InternalServerErrorException('Falha ao atualizar artigo');
     }
@@ -107,12 +108,11 @@ export class ArticleService {
       deletedArticle = await this.repository.delete(articleId);
     } catch (error) {
       this.logger.error('[delete] article delete failure', logText(error));
-      throw new InternalServerErrorException('Falha ao deletar artigo');
-    }
 
-    if (!deletedArticle) {
-      this.logger.warn('[get] not found article');
-      throw new NotFoundException('Artigo não encontrado');
+      //refatorar erros prisma
+      if (error?.code === 'P2025') throw new ConflictException('Artigo não encontrado');
+
+      throw new InternalServerErrorException('Falha ao deletar artigo');
     }
 
     this.logger.log('[get] article deleted successfully', logText(deletedArticle));
