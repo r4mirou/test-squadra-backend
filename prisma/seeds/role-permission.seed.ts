@@ -27,6 +27,9 @@ export async function seedRolePermission(
     { roleName: 'READER', permissionNames: ['READ_ARTICLE'] },
   ];
 
+  const rperm = await tx.rolePermission.findMany({});
+  if (rperm.length > 0) return;
+
   for (const { roleName, permissionNames } of allRolesPermissions) {
     const role = allRegisteredRoles.find((r) => r.name === roleName);
 
